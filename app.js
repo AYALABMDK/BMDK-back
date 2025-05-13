@@ -1,18 +1,52 @@
-// app.js
+// Load environment variables from .env file
+require('dotenv').config();
 
-// לייבא את express (מערכת מסגרת ליצירת שרתים)
+// Import required libraries
 const express = require('express');
+const mongoose = require('mongoose');
+
+// Initialize the Express application
 const app = express();
 
-// הצגה פשוטה בעת ביקור בעמוד הראשי
+// Middleware to parse JSON bodies in requests
+app.use(express.json());
+
+// Connect to MongoDB using Mongoose
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+  .then(async () => {
+    console.log('✅ Connected to MongoDB');
+
+    // Get the native MongoDB database object from Mongoose
+    const db = mongoose.connection.db;
+
+    // List all collections currently in the database
+    const collections = await db.listCollections().toArray();
+    console.log('📦 Collections in current database:');
+    collections.forEach(col => console.log(' -', col.name));
+  })
+  .catch(err => {
+    console.error('❌ MongoDB connection error:', err);
+  });
+
+
+// Simple health check route
 app.get('/', (req, res) => {
-  res.send('Hello World!');
+  res.send('API is working!');
 });
 
-// הגדרת השרת לשמיעה על פורט 4000 (או פורט אחר שתרצה)
+
+// Topic routes
+const topicRoutes = require('./routes/topicRoutes');
+app.use('/topics', topicRoutes);
+
+// Students routes
+const studentsRoutes = require('./routes/studentsRoutes');
+app.use('/students', studentsRoutes);
+
+
+// Start the server
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
-
-//123
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
