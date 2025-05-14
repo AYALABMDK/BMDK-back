@@ -5,6 +5,9 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 
+// Import Swagger files
+const { swaggerSpec, swaggerUi } = require('./docs/swagger');
+
 // Initialize the Express application
 const app = express();
 
@@ -12,10 +15,7 @@ const app = express();
 app.use(express.json());
 
 // Connect to MongoDB using Mongoose
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
+mongoose.connect(process.env.MONGO_URI)
   .then(async () => {
     console.log('✅ Connected to MongoDB');
 
@@ -31,12 +31,13 @@ mongoose.connect(process.env.MONGO_URI, {
     console.error('❌ MongoDB connection error:', err);
   });
 
+// Swagger route to serve documentation
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Simple health check route
 app.get('/', (req, res) => {
   res.send('API is working!');
 });
-
 
 // Topic routes
 const topicRoutes = require('./routes/topicRoutes');
@@ -45,7 +46,6 @@ app.use('/topics', topicRoutes);
 // Students routes
 const studentsRoutes = require('./routes/studentsRoutes');
 app.use('/students', studentsRoutes);
-
 
 // Start the server
 const PORT = process.env.PORT || 4000;
