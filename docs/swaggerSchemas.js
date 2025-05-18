@@ -34,7 +34,15 @@ const schemas = {
         notes: { type: 'string' }
       },
       required: ['code', 'topicCode', 'signs', 'signsTopic']
-    }    
+    },
+    StudentLessons: {
+      type: 'object',
+      properties: {
+        studentCode: { type: 'integer' },
+        lessonCode: { type: 'integer' },
+      },
+      required: ['studentCode', 'lessonCode'],
+    }     
   };
   
   module.exports = schemas;
