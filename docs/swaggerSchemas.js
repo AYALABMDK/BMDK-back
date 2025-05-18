@@ -18,6 +18,23 @@ const schemas = {
         name: { type: 'string' },
       },
     },
+    Books: {
+      type: 'object',
+      properties: {
+        code: { type: 'integer' },
+        topicCode: { type: 'integer' },
+        signs: { type: 'string' },
+        signsTopic: { type: 'string' },
+        bigBooksQuantity: { type: 'integer' },
+        smallBooksQuantity: { type: 'integer' },
+        bigBooksSold: { type: 'integer' },
+        smallBooksSold: { type: 'integer' },
+        bigBookPrice: { type: 'integer' },
+        smallBookPrice: { type: 'integer' },
+        notes: { type: 'string' }
+      },
+      required: ['code', 'topicCode', 'signs', 'signsTopic']
+    }    
   };
   
   module.exports = schemas;
