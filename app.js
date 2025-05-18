@@ -51,6 +51,10 @@ app.use('/students', studentsRoutes);
 const booksRoutes = require('./routes/booksRoutes');
 app.use('/books', booksRoutes);
 
+// Videos routes
+const videoRoutes = require('./routes/videoRoutes');
+app.use('/videos', videoRoutes);
+
 // Start the server
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
