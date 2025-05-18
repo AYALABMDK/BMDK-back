@@ -55,6 +55,10 @@ app.use('/books', booksRoutes);
 const studentLessonsRoutes = require('./routes/studentLessonsRoutes');
 app.use('/studentLessons', studentLessonsRoutes);
 
+// Tests routes
+const testsRoutes = require('./routes/testsRoutes');
+app.use('/tests', testsRoutes);
+
 // Start the server
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

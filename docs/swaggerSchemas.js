@@ -42,7 +42,34 @@ const schemas = {
         lessonCode: { type: 'integer' },
       },
       required: ['studentCode', 'lessonCode'],
-    }     
+    },
+    Tests: {
+      type: 'object',
+      properties: {
+        code: { type: 'integer' },
+        topicId: { type: 'integer' },
+        topicPart: { type: 'string' },
+        signs: { type: 'string' },
+        content: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              code: { type: 'integer' },
+              question: { type: 'string' },
+              answerList: {
+                type: 'array',
+                items: { type: 'string' }
+              },
+              correctAnswer: { type: 'integer' },
+              score: { type: 'integer' }
+            },
+            required: ['code', 'question', 'answerList', 'correctAnswer', 'score']
+          }
+        }
+      },
+      required: ['code', 'topicId', 'topicPart', 'signs', 'content']
+    }        
   };
   
   module.exports = schemas;
