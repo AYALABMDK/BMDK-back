@@ -101,8 +101,31 @@ const schemas = {
         notes: { type: 'string' }
       },
       required: ['code', 'topicCode', 'topicPart', 'signsTopic', 'price', 'sold']
-    }
+    },
+    Orders: {
+      type: 'object',
+      properties: {
+        orderCode: { type: 'integer' },
+        studentCode: { type: 'integer' },
+        status: { type: 'string' },
+        products: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              bookCode: { type: 'string' },
+              size: { type: 'string' },
+              quantity: { type: 'integer' },
+              price: { type: 'number' }
+            },
+            required: ['bookCode', 'size', 'quantity', 'price']
+          }
+        }
+      },
+      required: ['orderCode', 'studentCode', 'status', 'products']
+    }    
     
+  
   };
   
   module.exports = schemas;

@@ -63,8 +63,13 @@ app.use('/studentLessons', studentLessonsRoutes);
 const testsRoutes = require('./routes/testsRoutes');
 app.use('/tests', testsRoutes);
 
+// Lessons routes
 const lessonsRoutes = require('./routes/lessonsRouter')
 app.use('/lessons', lessonsRoutes);
+
+// Orders routes
+const ordersRoutes = require('./routes/ordersRoutes');
+app.use('/orders',ordersRoutes)
 
 // Start the server
 const PORT = process.env.PORT || 4000;
