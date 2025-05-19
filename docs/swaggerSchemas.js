@@ -69,7 +69,40 @@ const schemas = {
         }
       },
       required: ['code', 'topicId', 'topicPart', 'signs', 'content']
-    }        
+    },
+    Lessons: {
+      type: 'object',
+      properties: {
+        code: { type: 'integer' },
+        topicCode: { type: 'integer' },
+        description: { type: 'string' },
+        city: { type: 'string' },
+        day: { type: 'string' },
+        hour: { type: 'string' },
+        status: { type: 'string' },
+        studentsCount: { type: 'integer' },
+        studentsType: { type: 'string' },
+        price: { type: 'number' },
+        startDate: { type: 'string', format: 'date' },
+        endDate: { type: 'string', format: 'date' },
+        notes: { type: 'string' }
+      },
+      required: ['code', 'topicCode', 'description', 'city', 'day', 'hour', 'status']
+    },
+    Videos: {
+      type: 'object',
+      properties: {
+        code: { type: 'integer' },
+        topicCode: { type: 'integer' },
+        topicPart: { type: 'string' },
+        signsTopic: { type: 'string' },
+        price: { type: 'number' },
+        sold: { type: 'integer' },
+        notes: { type: 'string' }
+      },
+      required: ['code', 'topicCode', 'topicPart', 'signsTopic', 'price', 'sold']
+    }
+    
   };
   
   module.exports = schemas;

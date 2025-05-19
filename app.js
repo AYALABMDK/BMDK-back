@@ -63,6 +63,9 @@ app.use('/studentLessons', studentLessonsRoutes);
 const testsRoutes = require('./routes/testsRoutes');
 app.use('/tests', testsRoutes);
 
+const lessonsRoutes = require('./routes/lessonsRouter')
+app.use('/lessons', lessonsRoutes);
+
 // Start the server
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
