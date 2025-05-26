@@ -44,7 +44,7 @@ router.get('/', async (req, res) => {
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Video'
+ *             $ref: '#/components/schemas/Videos'
  *     responses:
  *       201:
  *         description: video added
@@ -59,6 +59,7 @@ router.post('/', async (req, res) => {
     signsTopic: req.body.signsTopic,
     price: req.body.price,
     sold: req.body.sold,
+    videoExUrl: req.body.videoExUrl,
     notes: req.body.notes
   });
 

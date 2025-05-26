@@ -7,6 +7,7 @@ const videoSchema = new mongoose.Schema({
   signsTopic: { type: String, required: true },
   price: { type: Number, required: true },
   sold: { type: Number, required: true },
+  videoExUrl: {type: String },
   notes: { type: String }
 });
 

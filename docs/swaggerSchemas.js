@@ -16,6 +16,7 @@ const schemas = {
       properties: {
         id: { type: 'integer' },
         name: { type: 'string' },
+        notes: { type: 'string'}
       },
     },
     Books: {
@@ -98,6 +99,7 @@ const schemas = {
         signsTopic: { type: 'string' },
         price: { type: 'number' },
         sold: { type: 'integer' },
+        videoExUrl: { type: 'string' },
         notes: { type: 'string' }
       },
       required: ['code', 'topicCode', 'topicPart', 'signsTopic', 'price', 'sold']
