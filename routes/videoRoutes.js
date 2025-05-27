@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Video = require('../models/video');
+const videoController = require('../controllers/videoController');
 
 /**
  * @swagger
@@ -21,10 +22,6 @@ const Video = require('../models/video');
  *         description: videos list
  */       
 
-
-
-
-// קבלת כל הסרטונים
 router.get('/', async (req, res) => {
   try {
     const videos = await Video.find();
@@ -33,6 +30,37 @@ router.get('/', async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+
+
+/**
+ * @swagger
+ * /videos/{topicCode}:
+ *   get:
+ *     summary: Get all videos by topic code
+ *     tags: [Videos]
+ *     parameters:
+ *       - in: path
+ *         name: topicCode
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The code of the topic
+ *     responses:
+ *       200:
+ *         description: A list of videos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Videos'
+ *       500:      
+ *        description: Server error
+ */ 
+
+router.get('/:topicCode', videoController.getVideosByTopicCode);
+
+
 /** 
  * @swagger
  * /videos:
@@ -44,13 +72,12 @@ router.get('/', async (req, res) => {
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Video'
+ *             $ref: '#/components/schemas/Videos'
  *     responses:
  *       201:
  *         description: video added
  */
 
-// הוספת סרטון חדש
 router.post('/', async (req, res) => {
   const video = new Video({
     code: req.body.code,
@@ -59,6 +86,7 @@ router.post('/', async (req, res) => {
     signsTopic: req.body.signsTopic,
     price: req.body.price,
     sold: req.body.sold,
+    videoExUrl: req.body.videoExUrl,
     notes: req.body.notes
   });
 
