@@ -54,4 +54,36 @@ router.post('/', async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /books/{topicCode}:
+ *   get:
+ *     summary: Get books by topicCode
+ *     tags: [Books]
+ *     parameters:
+ *       - in: path
+ *         name: topicCode
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The topic code to filter books
+ *     responses:
+ *       200:
+ *         description: List of books by topicCode
+ *       500:
+ *         description: Server error
+ */
+router.get('/:topicCode', async (req, res) => {
+  try {
+    const topicCode = parseInt(req.params.topicCode);
+    const books = await Books.find({ topicCode });
+    res.json(books);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'שגיאה בשרת' });
+  }
+});
+
+
+
 module.exports = router;
