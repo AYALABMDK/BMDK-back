@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Students = require('../models/Students.js');
+const studentsController = require('../controllers/studentsController');
 
 /**
  * @swagger
@@ -19,14 +19,7 @@ const Students = require('../models/Students.js');
  *       200:
  *         description: List of all students
  */
-router.get('/', async (req, res) => {
-  try {
-    const students = await Students.find();
-    res.json(students);
-  } catch (err) {
-    res.status(500).json({ error: 'Error fetching students' });
-  }
-});
+router.get('/', studentsController.getAllStudents);
 
 /**
  * @swagger
@@ -44,14 +37,6 @@ router.get('/', async (req, res) => {
  *       201:
  *         description: Student created
  */
-router.post('/', async (req, res) => {
-  try {
-    const newStudents = new Students(req.body);
-    await newStudents.save();
-    res.status(201).json(newStudents);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
+router.post('/', studentsController.addStudent);
 
 module.exports = router;

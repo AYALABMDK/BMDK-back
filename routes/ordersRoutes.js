@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Orders = require('../models/Orders.js');
+const ordersController = require('../controllers/ordersController');
 
 /**
  * @swagger
@@ -19,14 +19,7 @@ const Orders = require('../models/Orders.js');
  *       200:
  *         description: List of all orders
  */
-router.get('/', async (req, res) => {
-  try {
-    const orders = await Orders.find();
-    res.json(orders);
-  } catch (err) {
-    res.status(500).json({ error: 'Error fetching orders' });
-  }
-});
+router.get('/', ordersController.getAllOrders);
 
 /**
  * @swagger
@@ -44,14 +37,6 @@ router.get('/', async (req, res) => {
  *       201:
  *         description: Order created
  */
-router.post('/', async (req, res) => {
-  try {
-    const newOrder = new Orders(req.body);
-    await newOrder.save();
-    res.status(201).json(newOrder);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
+router.post('/', ordersController.addOrder);
 
 module.exports = router;

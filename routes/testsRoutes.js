@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Tests = require('../models/Tests.js');
+const testsController = require('../controllers/testsController');
 
 /**
  * @swagger
@@ -19,14 +19,7 @@ const Tests = require('../models/Tests.js');
  *       200:
  *         description: List of all tests
  */
-router.get('/', async (req, res) => {
-  try {
-    const tests = await Tests.find();
-    res.json(tests);
-  } catch (err) {
-    res.status(500).json({ error: 'Error fetching tests' });
-  }
-});
+router.get('/', testsController.getAllTests);
 
 /**
  * @swagger
@@ -44,14 +37,6 @@ router.get('/', async (req, res) => {
  *       201:
  *         description: Test created
  */
-router.post('/', async (req, res) => {
-  try {
-    const newTest = new Tests(req.body);
-    await newTest.save();
-    res.status(201).json(newTest);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
+router.post('/', testsController.addTest);
 
 module.exports = router;

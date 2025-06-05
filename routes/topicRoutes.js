@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Topic = require('../models/Topic.js');
+const topicsController = require('../controllers/topicsController');
 
 /**
  * @swagger
@@ -19,14 +19,7 @@ const Topic = require('../models/Topic.js');
  *       200:
  *         description: List of all topics
  */
-router.get('/', async (req, res) => {
-  try {
-    const topic = await Topic.find();
-    res.json(topic);
-  } catch (err) {
-    res.status(500).json({ error: 'Error fetching topics' });
-  }
-});
+router.get('/', topicsController.getAllTopics);
 
 /**
  * @swagger
@@ -44,14 +37,6 @@ router.get('/', async (req, res) => {
  *       201:
  *         description: Topic created
  */
-router.post('/', async (req, res) => {
-  try {
-    const newTopic = new Topic(req.body);
-    await newTopic.save();
-    res.status(201).json(newTopic);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
+router.post('/', topicsController.addTopic);
 
 module.exports = router;

@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const Video = require('../models/video');
 const videoController = require('../controllers/videoController');
 
 /**
@@ -9,7 +8,6 @@ const videoController = require('../controllers/videoController');
  *   name: Videos
  *   description: Video management
  */
-
 
 /**
  * @swagger
@@ -20,17 +18,8 @@ const videoController = require('../controllers/videoController');
  *     responses:
  *       200:
  *         description: videos list
- */       
-
-router.get('/', async (req, res) => {
-  try {
-    const videos = await Video.find();
-    res.json(videos);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
-
+ */
+router.get('/', videoController.getAllVideos);
 
 /**
  * @swagger
@@ -48,20 +37,12 @@ router.get('/', async (req, res) => {
  *     responses:
  *       200:
  *         description: A list of videos
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Videos'
- *       500:      
- *        description: Server error
- */ 
-
+ *       500:
+ *         description: Server error
+ */
 router.get('/:topicCode', videoController.getVideosByTopicCode);
 
-
-/** 
+/**
  * @swagger
  * /videos:
  *   post:
@@ -77,25 +58,6 @@ router.get('/:topicCode', videoController.getVideosByTopicCode);
  *       201:
  *         description: video added
  */
-
-router.post('/', async (req, res) => {
-  const video = new Video({
-    code: req.body.code,
-    topicCode: req.body.topicCode,
-    topicPart: req.body.topicPart,
-    signsTopic: req.body.signsTopic,
-    price: req.body.price,
-    sold: req.body.sold,
-    videoExUrl: req.body.videoExUrl,
-    notes: req.body.notes
-  });
-
-  try {
-    const newVideo = await video.save();
-    res.status(201).json(newVideo);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-});
+router.post('/', videoController.addVideo);
 
 module.exports = router;

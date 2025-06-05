@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Books = require('../models/Books.js');
+const booksController = require('../controllers/booksController.js');
 
 /**
  * @swagger
@@ -19,20 +19,13 @@ const Books = require('../models/Books.js');
  *       200:
  *         description: List of all books
  */
-router.get('/', async (req, res) => {
-  try {
-    const books = await Books.find();
-    res.json(books);
-  } catch (err) {
-    res.status(500).json({ error: 'Error fetching books' });
-  }
-});
+router.get('/', booksController.getAllBooks);
 
 /**
  * @swagger
  * /books:
  *   post:
- *     summary: Add a new books
+ *     summary: Add a new book
  *     tags: [Books]
  *     requestBody:
  *       required: true
@@ -44,15 +37,7 @@ router.get('/', async (req, res) => {
  *       201:
  *         description: Book created
  */
-router.post('/', async (req, res) => {
-  try {
-    const newBooks = new Books(req.body);
-    await newBooks.save();
-    res.status(201).json(newBooks);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
+router.post('/', booksController.addBook);
 
 /**
  * @swagger
@@ -73,17 +58,6 @@ router.post('/', async (req, res) => {
  *       500:
  *         description: Server error
  */
-router.get('/:topicCode', async (req, res) => {
-  try {
-    const topicCode = parseInt(req.params.topicCode);
-    const books = await Books.find({ topicCode });
-    res.json(books);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'שגיאה בשרת' });
-  }
-});
-
-
+router.get('/:topicCode', booksController.getBooksByTopicCode);
 
 module.exports = router;
