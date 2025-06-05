@@ -11,6 +11,13 @@ const { swaggerSpec, swaggerUi } = require('./docs/swagger');
 // Initialize the Express application
 const app = express();
 
+//cors
+const cors = require('cors');
+
+app.use(cors({
+  origin: 'http://localhost:3000'  // או '*', אם את רק מפתחת
+}));
+
 // Middleware to parse JSON bodies in requests
 app.use(express.json());
 
