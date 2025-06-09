@@ -78,6 +78,10 @@ app.use('/lessons', lessonsRoutes);
 const ordersRoutes = require('./routes/ordersRoutes');
 app.use('/orders',ordersRoutes)
 
+// Contact routes (email sending)
+const contactRoutes = require('./routes/contactRoutes');
+app.use('/contact', contactRoutes);
+
 // Start the server
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
