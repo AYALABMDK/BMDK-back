@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
 const lessonsSchema = new mongoose.Schema({
-  code: String,
-  topicCode: String,
+  code: Number,
+  topicCode: Number,
   description: String,
   city: String,
   day: String,

@@ -39,4 +39,25 @@ router.get('/', lessonsController.getAllLessons);
  */
 router.post('/', lessonsController.addLesson);
 
+/**
+ * @swagger
+ * /lessons/{topicCode}:
+ *   get:
+ *     summary: Get lessons by topicCode
+ *     tags: [Lessons]
+ *     parameters:
+ *       - in: path
+ *         name: topicCode
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The topic code to filter lessons
+ *     responses:
+ *       200:
+ *         description: List of lessons by topicCode
+ *       500:
+ *         description: Server error
+ */
+router.get('/:topicCode', lessonsController.getLessonsByTopicCode);
+
 module.exports = router;

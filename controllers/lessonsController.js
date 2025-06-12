@@ -18,3 +18,14 @@ exports.addLesson = async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 };
+
+exports.getLessonsByTopicCode = async (req, res) => {
+  try {
+    const topicCode = parseInt(req.params.topicCode);
+    const lessons = await Lessons.find({ topicCode });
+    res.json(lessons);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'שגיאה בשרת' });
+  }
+};
