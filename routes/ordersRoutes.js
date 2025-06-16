@@ -32,7 +32,31 @@ router.get('/', ordersController.getAllOrders);
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Orders'
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: Email address of the customer
+ *               orderCode:
+ *                 type: number
+ *               studentCode:
+ *                 type: number
+ *               status:
+ *                 type: string
+ *               products:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     bookCode:
+ *                       type: string
+ *                     size:
+ *                       type: string
+ *                     quantity:
+ *                       type: number
+ *                     price:
+ *                       type: number
  *     responses:
  *       201:
  *         description: Order created
