@@ -32,7 +32,9 @@ const generateOrderEmailHtml = (order) => {
       <h2>תודה על ההזמנה!</h2>
       <p>מספר הזמנה: ${order.orderCode}</p>
       <p>קוד תלמיד: ${order.studentCode}</p>
-      <p>סטטוס: ${order.status}</p>
+      <p>סטטוס הזמנה: ${order.status}</p>
+      <p>כתובת למשלוח: ${order.address.street}, ${order.address.city}</p>
+      <p>טלפון ליצירת קשר המעודכן אצלנו: ${order.phone}</p>
       <p><strong>פרטי הזמנה:</strong></p>
       <ul>${productList}</ul>
     </div>
@@ -42,12 +44,12 @@ const generateOrderEmailHtml = (order) => {
 exports.addOrder = async (req, res) => {
   try {
     const { email, ...orderData } = req.body;
-
+    debugger;
     if (!email) {
       return res.status(400).json({ error: 'Email is required' });
     }
 
-    const newOrder = new Orders({ ...orderData });
+    const newOrder = new Orders({ email, ...orderData });
     await newOrder.save();
 
     const emailHtml = generateOrderEmailHtml(newOrder);

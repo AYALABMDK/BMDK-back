@@ -38,12 +38,24 @@ router.get('/', ordersController.getAllOrders);
  *                 type: string
  *                 format: email
  *                 description: Email address of the customer
+ *               phone:
+ *                 type: string
  *               orderCode:
  *                 type: number
  *               studentCode:
  *                 type: number
  *               status:
  *                 type: string
+ *               address:
+ *                 type: object
+ *                 properties:
+ *                   city:
+ *                     type: string
+ *                   street:
+ *                     type: string
+ *                 required:
+ *                   - city
+ *                   - street
  *               products:
  *                 type: array
  *                 items:
@@ -51,12 +63,16 @@ router.get('/', ordersController.getAllOrders);
  *                   properties:
  *                     bookCode:
  *                       type: string
+ *                     videoCode:
+ *                       type: number
  *                     size:
  *                       type: string
  *                     quantity:
  *                       type: number
  *                     price:
  *                       type: number
+ *                   required:
+ *                     - price
  *     responses:
  *       201:
  *         description: Order created
