@@ -1,4 +1,7 @@
 const Orders = require('../models/Orders');
+const Topic = require('../models/Topic');
+const Books = require('../models/Books');
+const Video = require('../models/Video');
 const nodemailer = require('nodemailer');
 require('dotenv').config();
 
@@ -19,19 +22,36 @@ exports.getAllOrders = async (req, res) => {
   }
 };
 
-const generateOrderEmailHtml = (order) => {
+const generateOrderEmailHtml = async(order) => {
+
+  const books = await Books.find();
+  const videos = await Video.find();
+  const topics = await Topic.find();
+  console.log(topics);
+
   const productList = order.products
-    .map(
-      (p) =>
-        `<li>קוד ספר: ${p.bookCode}, גודל: ${p.size}, כמות: ${p.quantity}, סה"כ מחיר: ${p.price}₪</li>`
-    )
-    .join('');
+  .map((p) => {
+    const parts = [];
+    if (p.bookCode !== undefined && p.bookCode !== null) {
+      const book = books.find(x => x.code === Number(p.bookCode));
+      const topic = topics.find(x => x.id === book.topicCode);
+      parts.push(`<strong>ספר ${topic.name} ${book.signs} </strong>קוד ספר: ${p.bookCode}, גודל: ${p.size}, `);
+    }
+    else {
+      const video = videos.find(x => x.code === p.videoCode);
+      const topic = topics.find(x => x.id === video.topicCode);
+      parts.push(`<strong>סרטונים ${topic.name} ${video.topicPart} ${video.signsTopic} </strong>קוד סרטונים: ${p.videoCode}, `)
+    }
+    parts.push(`כמות: ${p.quantity}, סה"כ מחיר: ${p.price}₪`);
+
+    return `<li>${parts.join('')}</li>`;
+  })
+  .join('');
 
   return `
     <div dir="rtl" style="font-family: Arial, sans-serif;">
-      <h2>תודה על ההזמנה!</h2>
+      <h2>${order.fullName}, תודה על ההזמנה!</h2>
       <p>מספר הזמנה: ${order.orderCode}</p>
-      <p>קוד תלמיד: ${order.studentCode}</p>
       <p>סטטוס הזמנה: ${order.status}</p>
       <p>כתובת למשלוח: ${order.address.street}, ${order.address.city}</p>
       <p>טלפון ליצירת קשר המעודכן אצלנו: ${order.phone}</p>
@@ -52,7 +72,7 @@ exports.addOrder = async (req, res) => {
     const newOrder = new Orders({ email, ...orderData });
     await newOrder.save();
 
-    const emailHtml = generateOrderEmailHtml(newOrder);
+    const emailHtml = await generateOrderEmailHtml(newOrder);
 
     // שליחת מייל למזמין
     await transporter.sendMail({

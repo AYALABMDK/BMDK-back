@@ -117,6 +117,7 @@ const schemas = {
         },
         required: ['city', 'street']
       },
+      fullName: { type: 'string' },
       email: { type: 'string' },
       phone: { type: 'string' },
       status: { type: 'string' },
@@ -131,11 +132,11 @@ const schemas = {
             quantity: { type: 'integer' },
             price: { type: 'number' }
           },
-          required: ['price']
+          required: ['price', 'quantity']
         }
       }
     },
-    required: ['orderCode', 'studentCode', 'address', 'email', 'phone', 'status', 'products']
+    required: ['orderCode', 'address', 'fullName', 'email', 'phone', 'status', 'products']
   }
 };
 

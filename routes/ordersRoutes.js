@@ -73,6 +73,7 @@ router.get('/', ordersController.getAllOrders);
  *                       type: number
  *                   required:
  *                     - price
+ *                     - quantity
  *     responses:
  *       201:
  *         description: Order created
