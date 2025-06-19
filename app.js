@@ -10,12 +10,16 @@ const { swaggerSpec, swaggerUi } = require('./docs/swagger');
 
 // Initialize the Express application
 const app = express();
+const cookieParser = require('cookie-parser');
+app.use(cookieParser());
+
 
 //cors
 const cors = require('cors');
 
 app.use(cors({
-  origin: 'http://localhost:3000'  // או '*', אם את רק מפתחת
+  origin: 'http://localhost:3000',  // או '*', אם את רק מפתחת
+  credentials: true // חשוב בשביל לשלוח עוגיות
 }));
 
 // Middleware to parse JSON bodies in requests
@@ -81,6 +85,12 @@ app.use('/orders',ordersRoutes)
 // Contact routes (email sending)
 const contactRoutes = require('./routes/contactRoutes');
 app.use('/contact', contactRoutes);
+
+// Admin routes
+const adminRouter = require('./routes/adminRoutes');
+app.use('/admin', adminRouter);
+
+
 
 // Start the server
 const PORT = process.env.PORT || 4000;
