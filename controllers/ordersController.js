@@ -1,12 +1,12 @@
-const Orders = require('../models/Orders');
-const Topic = require('../models/Topic');
-const Books = require('../models/Books');
-const Video = require('../models/Video');
-const nodemailer = require('nodemailer');
-require('dotenv').config();
+const Orders = require("../models/Orders");
+const Topic = require("../models/Topic");
+const Books = require("../models/Books");
+const Video = require("../models/Video");
+const nodemailer = require("nodemailer");
+require("dotenv").config();
 
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  service: "gmail",
   auth: {
     user: process.env.GMAIL_USER,
     pass: process.env.GMAIL_PASS,
@@ -18,45 +18,92 @@ exports.getAllOrders = async (req, res) => {
     const orders = await Orders.find();
     res.json(orders);
   } catch (err) {
-    res.status(500).json({ error: 'Error fetching orders' });
+    res.status(500).json({ error: "Error fetching orders" });
   }
 };
 
-const generateOrderEmailHtml = async(order) => {
-
+const generateOrderEmailHtml = async (order) => {
   const books = await Books.find();
   const videos = await Video.find();
   const topics = await Topic.find();
-  console.log(topics);
+
+  const totalPrice = order.products.reduce(
+    (sum, p) => sum + Number(p.price || 0),
+    0
+  );
 
   const productList = order.products
-  .map((p) => {
-    const parts = [];
-    if (p.bookCode !== undefined && p.bookCode !== null) {
-      const book = books.find(x => x.code === Number(p.bookCode));
-      const topic = topics.find(x => x.id === book.topicCode);
-      parts.push(`<strong>ספר ${topic.name} ${book.signs} </strong>קוד ספר: ${p.bookCode}, גודל: ${p.size}, `);
-    }
-    else {
-      const video = videos.find(x => x.code === p.videoCode);
-      const topic = topics.find(x => x.id === video.topicCode);
-      parts.push(`<strong>סרטונים ${topic.name} ${video.topicPart} ${video.signsTopic} </strong>קוד סרטונים: ${p.videoCode}, `)
-    }
-    parts.push(`כמות: ${p.quantity}, סה"כ מחיר: ${p.price}₪`);
+    .map((p) => {
+      let rowContent = "";
 
-    return `<li>${parts.join('')}</li>`;
-  })
-  .join('');
+      if (p.bookCode !== undefined && p.bookCode !== null) {
+        const book = books.find((x) => x.code === Number(p.bookCode));
+        const topic = topics.find((x) => x.id === book.topicCode);
+        rowContent = `
+          <td style="border: 1px solid #cfcfcf; padding: 12px;"> ספר ${topic.name} ${book.signs}</td>
+          <td style="border: 1px solid #cfcfcf; padding: 12px;">${p.size}</td>
+          <td style="border: 1px solid #cfcfcf; padding: 12px;">${p.quantity}</td>
+          <td style="border: 1px solid #cfcfcf; padding: 12px;">${p.price} ₪</td>
+        `;
+      } else {
+        const video = videos.find((x) => x.code === p.videoCode);
+        const topic = topics.find((x) => x.id === video.topicCode);
+        rowContent = `
+          <td style="border: 1px solid #cfcfcf; padding: 12px;"> סרטון ${
+            topic.name
+          } ${video.topicPart || ""} ${video.signsTopic || ""}</td>
+          <td style="border: 1px solid #cfcfcf; padding: 12px;">-</td>
+          <td style="border: 1px solid #cfcfcf; padding: 12px;">${
+            p.quantity
+          }</td>
+          <td style="border: 1px solid #cfcfcf; padding: 12px;">${
+            p.price
+          } ₪</td>
+        `;
+      }
+
+      return `<tr style="background-color: #f9f9f9;">${rowContent}</tr>`;
+    })
+    .join("");
 
   return `
-    <div dir="rtl" style="font-family: Arial, sans-serif;">
-      <h2>${order.fullName}, תודה על ההזמנה!</h2>
-      <p>מספר הזמנה: ${order.orderCode}</p>
-      <p>סטטוס הזמנה: ${order.status}</p>
-      <p>כתובת למשלוח: ${order.address.street}, ${order.address.city}</p>
-      <p>טלפון ליצירת קשר המעודכן אצלנו: ${order.phone}</p>
-      <p><strong>פרטי הזמנה:</strong></p>
-      <ul>${productList}</ul>
+    <div dir="rtl" style="font-family: Arial, sans-serif; text-align: center; background-color: #f2f2f2; padding: 30px;">
+        <div style="max-width: 700px; margin: 0 auto; text-align: center; width: 100%;">
+      <h2 style="color: #252e49; font-size: 28px;">${order.fullName}, תודה על ההזמנה!</h2>
+
+      <p style="font-size: 18px; color: #3b3b3b;"><strong>מספר הזמנה:</strong> ${order.orderCode}</p>
+      <p style="font-size: 18px; color: #3b3b3b;"><strong>סטטוס הזמנה:</strong> ${order.status}</p>
+      <p style="font-size: 18px; color: #3b3b3b;"><strong>כתובת למשלוח:</strong> ${order.address.street}, ${order.address.city}</p>
+      <p style="font-size: 18px; color: #3b3b3b;"><strong>טלפון:</strong> ${order.phone}</p>
+
+      <h3 style="margin-top: 40px; font-size: 24px; color: #558e9e;">פרטי ההזמנה:</h3>
+
+      <table style="margin: 20px auto; border-collapse: collapse; width: 100%; font-size: 17px;">
+        <thead>
+          <tr style="background-color: #252e49; color: white;">
+            <th style="border: 1px solid #cfcfcf; padding: 12px;">מוצר</th>
+            <th style="border: 1px solid #cfcfcf; padding: 12px;">גודל</th>
+            <th style="border: 1px solid #cfcfcf; padding: 12px;">כמות</th>
+            <th style="border: 1px solid #cfcfcf; padding: 12px;">מחיר</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${productList}
+          <tr style="background-color: #e9ecef;">
+            <td colspan="3" style="border: 1px solid #cfcfcf; padding: 14px; font-weight: bold; text-align: left; color: #252e49;">סה"כ</td>
+            <td style="border: 1px solid #cfcfcf; padding: 14px; font-weight: bold; color: #252e49;">${totalPrice} ₪</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p style="margin-top: 40px; font-size: 17px; color: #858585;">
+        אם ברצונכם לעדכן פרטי יצירת קשר, אנא השיבו להודעה זו ונשמח לעדכן עבורכם.
+      </p>
+
+      <img src="https://res.cloudinary.com/ddh5xmwns/image/upload/v1750327984/%D7%A6%D7%99%D7%9C%D7%95%D7%9D_%D7%9E%D7%A1%D7%9A_2025-06-19_120841_tkphib.png"
+        alt="תודה על ההזמנה"
+        style="width: 100%; margin-top: 30px; max-width: 700px; border-radius: 10px;height: auto;" />
+    </div>
     </div>
   `;
 };
@@ -66,7 +113,7 @@ exports.addOrder = async (req, res) => {
     const { email, ...orderData } = req.body;
     debugger;
     if (!email) {
-      return res.status(400).json({ error: 'Email is required' });
+      return res.status(400).json({ error: "Email is required" });
     }
 
     const newOrder = new Orders({ email, ...orderData });
@@ -78,7 +125,7 @@ exports.addOrder = async (req, res) => {
     await transporter.sendMail({
       from: `"דרך קצרה" <${process.env.GMAIL_USER}>`,
       to: email,
-      subject: 'תודה על הזמנתך',
+      subject: "תודה על הזמנתך",
       html: emailHtml,
     });
 
@@ -86,13 +133,13 @@ exports.addOrder = async (req, res) => {
     await transporter.sendMail({
       from: `"אתר דרך קצרה" <${process.env.GMAIL_USER}>`,
       to: process.env.GMAIL_USER,
-      subject: `התקבלה הזמנה חדשה מקוד תלמיד ${newOrder.studentCode}`,
+      subject: `התקבלה הזמנה חדשה מאת ${newOrder.fullName}`,
       html: emailHtml,
     });
 
     res.status(201).json(newOrder);
   } catch (err) {
-    console.error('שגיאה בשליחת מייל:', err.message);
-    res.status(500).json({ error: 'שגיאה בהזמנה או בשליחת המייל' });
+    console.error("שגיאה בשליחת מייל:", err.message);
+    res.status(500).json({ error: "שגיאה בהזמנה או בשליחת המייל" });
   }
 };
