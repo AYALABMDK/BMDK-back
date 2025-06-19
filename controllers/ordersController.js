@@ -69,6 +69,10 @@ const generateOrderEmailHtml = async (order) => {
   return `
     <div dir="rtl" style="font-family: Arial, sans-serif; text-align: center; background-color: #f2f2f2; padding: 30px;">
         <div style="max-width: 700px; margin: 0 auto; text-align: center; width: 100%;">
+         <img src="https://res.cloudinary.com/ddh5xmwns/image/upload/v1750327984/%D7%A6%D7%99%D7%9C%D7%95%D7%9D_%D7%9E%D7%A1%D7%9A_2025-06-19_120841_tkphib.png"
+        alt="תודה על ההזמנה"
+        style="width: 100%; margin-top: 30px; max-width: 700px; border-radius: 10px;height: auto;" />
+
       <h2 style="color: #252e49; font-size: 28px;">${order.fullName}, תודה על ההזמנה!</h2>
 
       <p style="font-size: 18px; color: #3b3b3b;"><strong>מספר הזמנה:</strong> ${order.orderCode}</p>
@@ -100,9 +104,7 @@ const generateOrderEmailHtml = async (order) => {
         אם ברצונכם לעדכן פרטי יצירת קשר, אנא השיבו להודעה זו ונשמח לעדכן עבורכם.
       </p>
 
-      <img src="https://res.cloudinary.com/ddh5xmwns/image/upload/v1750327984/%D7%A6%D7%99%D7%9C%D7%95%D7%9D_%D7%9E%D7%A1%D7%9A_2025-06-19_120841_tkphib.png"
-        alt="תודה על ההזמנה"
-        style="width: 100%; margin-top: 30px; max-width: 700px; border-radius: 10px;height: auto;" />
+     
     </div>
     </div>
   `;
