@@ -6,7 +6,7 @@ const videoSchema = new mongoose.Schema({
   topicPart: { type: String, required: true },
   signsTopic: { type: String, required: true },
   price: { type: Number, required: true },
-  sold: { type: Number, required: true },
+  soldAmount: { type: Number, required: true },
   videoExUrl: {type: String },
   notes: { type: String }
 });

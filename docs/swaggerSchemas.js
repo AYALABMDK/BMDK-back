@@ -98,11 +98,11 @@ const schemas = {
       topicPart: { type: 'string' },
       signsTopic: { type: 'string' },
       price: { type: 'number' },
-      sold: { type: 'integer' },
+      soldAmount: { type: 'integer' },
       videoExUrl: { type: 'string' },
       notes: { type: 'string' }
     },
-    required: ['code', 'topicCode', 'topicPart', 'signsTopic', 'price', 'sold']
+    required: ['code', 'topicCode', 'topicPart', 'signsTopic', 'price', 'soldAmount']
   },
   Orders: {
     type: 'object',

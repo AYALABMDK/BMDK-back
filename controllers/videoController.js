@@ -26,7 +26,7 @@ exports.addVideo = async (req, res) => {
     topicPart: req.body.topicPart,
     signsTopic: req.body.signsTopic,
     price: req.body.price,
-    sold: req.body.sold,
+    soldAmount: req.body.soldAmount,
     videoExUrl: req.body.videoExUrl,
     notes: req.body.notes
   });

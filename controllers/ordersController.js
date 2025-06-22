@@ -147,6 +147,36 @@ const generateOrderEmailHtml = async (order) => {
   `;
 };
 
+const updateDB = async (products) => {
+  for (const p of products) {
+    if (p.bookCode !== undefined && p.bookCode !== null) {
+      const code = Number(p.bookCode);
+      const book = await Books.findOne({ code });
+
+      if (!book) continue;
+
+      // Decide which size was sold
+      if (p.size === "גדול") {
+        book.bigBooksSold += p.quantity;
+        book.bigBooksQuantity -= p.quantity;
+      } else {
+        book.smallBooksSold += p.quantity;
+        book.smallBooksQuantity -= p.quantity;
+      }
+
+      await book.save();
+    }
+
+    if (p.videoCode !== undefined && p.videoCode !== null) {
+      const video = await Video.findOne({ code: p.videoCode });
+      if (!video) continue;
+
+      video.soldAmount += p.quantity;
+      await video.save();
+    }
+  }
+};
+
 exports.addOrder = async (req, res) => {
   try {
     const { email, ...orderData } = req.body;
@@ -158,6 +188,7 @@ exports.addOrder = async (req, res) => {
     // Set current date/time on server (in ISO format)
     orderData.orderDate = new Date();
 
+    await updateDB(orderData.products);
     const newOrder = new Orders({ email, ...orderData });
     await newOrder.save();
 
