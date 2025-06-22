@@ -121,6 +121,7 @@ const schemas = {
       email: { type: 'string' },
       phone: { type: 'string' },
       status: { type: 'string' },
+      orderDate: { type: 'string', format: 'date' },
       products: {
         type: 'array',
         items: {
@@ -136,7 +137,7 @@ const schemas = {
         }
       }
     },
-    required: ['orderCode', 'address', 'fullName', 'email', 'phone', 'status', 'products']
+    required: ['orderCode', 'address', 'fullName', 'email', 'phone', 'status', 'orderDate', 'products']
   }
 };
 

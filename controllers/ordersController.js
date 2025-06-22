@@ -155,6 +155,9 @@ exports.addOrder = async (req, res) => {
       return res.status(400).json({ error: "Email is required" });
     }
 
+    // Set current date/time on server (in ISO format)
+    orderData.orderDate = new Date();
+
     const newOrder = new Orders({ email, ...orderData });
     await newOrder.save();
 
