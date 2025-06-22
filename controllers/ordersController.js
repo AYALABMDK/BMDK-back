@@ -21,6 +21,43 @@ exports.getAllOrders = async (req, res) => {
     res.status(500).json({ error: "Error fetching orders" });
   }
 };
+exports.deleteOrder = async (req, res) => {
+  try {
+    const { orderCode } = req.params;
+
+    const deletedOrder = await Orders.findOneAndDelete({ orderCode });
+
+    if (!deletedOrder) {
+      return res.status(404).json({ error: "ההזמנה לא נמצאה" });
+    }
+
+    res.json({ message: "ההזמנה נמחקה בהצלחה" });
+  } catch (err) {
+    console.error("שגיאה במחיקת ההזמנה:", err.message);
+    res.status(500).json({ error: "שגיאה במחיקת ההזמנה" });
+  }
+};
+
+exports.updateOrder = async (req, res) => {
+  try {
+    const { orderCode } = req.params;
+    const updateData = req.body;
+
+    const updatedOrder = await Orders.findOneAndUpdate({ orderCode }, updateData, {
+      new: true,
+    });
+
+    if (!updatedOrder) {
+      return res.status(404).json({ error: "ההזמנה לא נמצאה" });
+    }
+
+    res.json(updatedOrder);
+  } catch (err) {
+    console.error("שגיאה בעדכון ההזמנה:", err.message);
+    res.status(500).json({ error: "שגיאה בעדכון ההזמנה" });
+  }
+};
+
 
 const generateOrderEmailHtml = async (order) => {
   const books = await Books.find();

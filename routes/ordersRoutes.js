@@ -79,5 +79,50 @@ router.get('/', ordersController.getAllOrders);
  *         description: Order created
  */
 router.post('/', ordersController.addOrder);
+/**
+ * @swagger
+ * /orders/{orderCode}:
+ *   delete:
+ *     summary: Delete an order by orderCode
+ *     tags: [Orders]
+ *     parameters:
+ *       - in: path
+ *         name: orderCode
+ *         required: true
+ *         description: Order orderCode
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Order deleted
+ */
+router.delete('/:orderCode', ordersController.deleteOrder);
+
+/**
+ * @swagger
+ * /orders/{orderCode}:
+ *   put:
+ *     summary: Update an order by orderCode
+ *     tags: [Orders]
+ *     parameters:
+ *       - in: path
+ *         name: orderCode
+ *         required: true
+ *         description: Order orderCode
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             description: Fields to update
+ *     responses:
+ *       200:
+ *         description: Updated order
+ */
+router.put('/:orderCode', ordersController.updateOrder);
+
 
 module.exports = router;
