@@ -19,6 +19,44 @@ exports.addBook = async (req, res) => {
   }
 };
 
+exports.deleteBook = async (req, res) => {
+  try {
+    const { bookCode } = req.params;
+
+    const deletedBook = await Books.findOneAndDelete({ code: Number(bookCode) });
+
+    if (!deletedBook) {
+      return res.status(404).json({ error: "הספר לא נמצא" });
+    }
+
+    res.json({ message: "הספר נמחק בהצלחה" });
+  } catch (err) {
+    console.error("שגיאה במחיקת הספר:", err.message);
+    res.status(500).json({ error: "שגיאה במחיקת הספר" });
+  }
+};
+
+exports.updateBook = async (req, res) => {
+  try {
+    const { bookCode } = req.params;
+    const updateData = req.body;
+
+    const updatedBook = await Books.findOneAndUpdate({ code: Number(bookCode) }, updateData, {
+      new: true,
+    });
+
+    if (!updatedBook) {
+      return res.status(404).json({ error: "הספר לא נמצא" });
+    }
+
+    res.json(updatedBook);
+  } catch (err) {
+    console.error("שגיאה בעדכון הספר:", err.message);
+    res.status(500).json({ error: "שגיאה בעדכון הספר" });
+  }
+};
+
+
 exports.getBooksByTopicCode = async (req, res) => {
   try {
     const topicCode = parseInt(req.params.topicCode);

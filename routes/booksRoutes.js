@@ -41,6 +41,51 @@ router.post('/', booksController.addBook);
 
 /**
  * @swagger
+ * /books/{bookCode}:
+ *   delete:
+ *     summary: Delete a book by bookCode
+ *     tags: [Books]
+ *     parameters:
+ *       - in: path
+ *         name: bookCode
+ *         required: true
+ *         description: Book bookCode
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Book deleted
+ */
+router.delete('/:bookCode', booksController.deleteBook);
+
+/**
+ * @swagger
+ * /books/{bookCode}:
+ *   put:
+ *     summary: Update a book by bookCode
+ *     tags: [Books]
+ *     parameters:
+ *       - in: path
+ *         name: bookCode
+ *         required: true
+ *         description: Book bookCode
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             description: Fields to update
+ *     responses:
+ *       200:
+ *         description: Updated book
+ */
+router.put('/:bookCode', booksController.updateBook);
+
+/**
+ * @swagger
  * /books/{topicCode}:
  *   get:
  *     summary: Get books by topicCode
