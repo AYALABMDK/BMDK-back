@@ -97,7 +97,7 @@ exports.addOrder = async (req, res) => {
     });
 
     await transporter.sendMail({
-      from: `" דרך קצרה" <${process.env.GMAIL_USER}>`,
+      from: `"דרך קצרה" <${process.env.GMAIL_USER}>`,
       to: process.env.GMAIL_USER,
       subject: `התקבלה הזמנה חדשה מאת ${newOrder.fullName}`,
       html: emailHtml,
@@ -140,7 +140,7 @@ exports.updateOrder = async (req, res) => {
       );
 
       await transporter.sendMail({
-        from: `"אתר דרך קצרה" <${process.env.GMAIL_USER}>`,
+        from: `" דרך קצרה" <${process.env.GMAIL_USER}>`,
         to: updatedOrder.email,
         subject:
           updateData.status === "נשלחה"
@@ -172,9 +172,13 @@ exports.confirmReceivedPage = async (req, res) => {
       await order.save();
 
       // שליחת מייל
-      const statusEmailHtml = generateStatusEmailHtml(order.fullName, "הסתיימה", order.orderCode);
+      const statusEmailHtml = generateStatusEmailHtml(
+        order.fullName,
+        "הסתיימה",
+        order.orderCode
+      );
       await transporter.sendMail({
-        from: `"אתר דרך קצרה" <${process.env.GMAIL_USER}>`,
+        from: `" דרך קצרה" <${process.env.GMAIL_USER}>`,
         to: order.email,
         subject: "ההזמנה שלך סופקה",
         html: statusEmailHtml,
@@ -185,10 +189,33 @@ exports.confirmReceivedPage = async (req, res) => {
       alreadyConfirmed,
       fullName: order.fullName,
     });
-
   } catch (err) {
     console.error("שגיאה באישור ההזמנה:", err.message);
     res.status(500).json({ error: "שגיאה בשרת" });
   }
 };
+exports.sendCustomEmail = async (req, res) => {
+  try {
+    const { to, subject, message } = req.body;
 
+    if (!to || !subject || !message) {
+      return res.status(400).json({ error: "חסרים שדות חובה" });
+    }
+
+    await transporter.sendMail({
+      from: `"דרך קצרה" <${process.env.GMAIL_USER}>`,
+      to,
+      subject,
+      html: `
+        <div dir="rtl" style="font-family: Arial, sans-serif; padding: 20px;">
+          ${message}
+        </div>
+      `,
+    });
+
+    res.status(200).json({ success: true, message: "המייל נשלח בהצלחה" });
+  } catch (err) {
+    console.error("שגיאה בשליחת מייל מותאם אישית:", err.message);
+    res.status(500).json({ error: "שליחת המייל נכשלה" });
+  }
+};

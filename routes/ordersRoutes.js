@@ -37,7 +37,6 @@ router.get("/", ordersController.getAllOrders);
  *               email:
  *                 type: string
  *                 format: email
- *                 description: Email address of the customer
  *               phone:
  *                 type: string
  *               orderCode:
@@ -81,6 +80,7 @@ router.get("/", ordersController.getAllOrders);
  *         description: Order created
  */
 router.post("/", ordersController.addOrder);
+
 /**
  * @swagger
  * /orders/{orderCode}:
@@ -110,7 +110,6 @@ router.delete("/:orderCode", ordersController.deleteOrder);
  *       - in: path
  *         name: orderCode
  *         required: true
- *         description: Order orderCode
  *         schema:
  *           type: string
  *     requestBody:
@@ -125,6 +124,58 @@ router.delete("/:orderCode", ordersController.deleteOrder);
  *         description: Updated order
  */
 router.put("/:orderCode", ordersController.updateOrder);
+
+/**
+ * @swagger
+ * /orders/confirm/{orderCode}:
+ *   get:
+ *     summary: Confirm order as delivered
+ *     tags: [Orders]
+ *     parameters:
+ *       - in: path
+ *         name: orderCode
+ *         required: true
+ *         description: Order code to confirm delivery
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Confirmation result and user name
+ *       404:
+ *         description: Order not found
+ */
 router.get("/confirm/:orderCode", ordersController.confirmReceivedPage);
+
+/**
+ * @swagger
+ * /orders/send-custom-email:
+ *   post:
+ *     summary: Send a custom email to a customer
+ *     tags: [Orders]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               to:
+ *                 type: string
+ *                 format: email
+ *               subject:
+ *                 type: string
+ *               message:
+ *                 type: string
+ *             required:
+ *               - to
+ *               - subject
+ *               - message
+ *     responses:
+ *       200:
+ *         description: Email sent successfully
+ *       500:
+ *         description: Failed to send email
+ */
+router.post("/send-custom-email", ordersController.sendCustomEmail);
 
 module.exports = router;
