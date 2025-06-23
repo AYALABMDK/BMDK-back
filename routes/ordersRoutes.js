@@ -1,6 +1,6 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const ordersController = require('../controllers/ordersController');
+const ordersController = require("../controllers/ordersController");
 
 /**
  * @swagger
@@ -19,7 +19,7 @@ const ordersController = require('../controllers/ordersController');
  *       200:
  *         description: List of all orders
  */
-router.get('/', ordersController.getAllOrders);
+router.get("/", ordersController.getAllOrders);
 
 /**
  * @swagger
@@ -80,7 +80,7 @@ router.get('/', ordersController.getAllOrders);
  *       201:
  *         description: Order created
  */
-router.post('/', ordersController.addOrder);
+router.post("/", ordersController.addOrder);
 /**
  * @swagger
  * /orders/{orderCode}:
@@ -98,7 +98,7 @@ router.post('/', ordersController.addOrder);
  *       200:
  *         description: Order deleted
  */
-router.delete('/:orderCode', ordersController.deleteOrder);
+router.delete("/:orderCode", ordersController.deleteOrder);
 
 /**
  * @swagger
@@ -124,7 +124,7 @@ router.delete('/:orderCode', ordersController.deleteOrder);
  *       200:
  *         description: Updated order
  */
-router.put('/:orderCode', ordersController.updateOrder);
-
+router.put("/:orderCode", ordersController.updateOrder);
+router.get("/confirm/:orderCode", ordersController.confirmReceivedPage);
 
 module.exports = router;
