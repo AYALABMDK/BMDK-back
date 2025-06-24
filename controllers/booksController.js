@@ -1,4 +1,5 @@
 const Books = require('../models/Books.js');
+const getNextSequence = require('../utils/getNextSequence.js')
 
 
 exports.getAllBooks = async (req, res) => {
@@ -12,7 +13,8 @@ exports.getAllBooks = async (req, res) => {
 
 exports.addBook = async (req, res) => {
   try {
-    const newBooks = new Books(req.body);
+    const code = await getNextSequence("books");
+    const newBooks = new Books({ ...req.body, code });
     await newBooks.save();
     res.status(201).json(newBooks);
   } catch (err) {

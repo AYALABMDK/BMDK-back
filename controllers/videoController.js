@@ -1,4 +1,5 @@
 const Video = require('../models/Video');
+const getNextSequence = require('../utils/getNextSequence.js')
 
 exports.getAllVideos = async (req, res) => {
   try {
@@ -20,20 +21,10 @@ exports.getVideosByTopicCode = async (req, res) => {
 };
 
 exports.addVideo = async (req, res) => {
-  const video = new Video({
-    code: req.body.code,
-    title: req.body.title,
-    topicCode: req.body.topicCode,
-    topicPart: req.body.topicPart,
-    signsTopic: req.body.signsTopic,
-    price: req.body.price,
-    soldAmount: req.body.soldAmount,
-    videoExUrl: req.body.videoExUrl,
-    notes: req.body.notes
-  });
-
   try {
-    const newVideo = await video.save();
+    const code = await getNextSequence("videos");
+    const newVideo = new Video({ ...req.body, code });
+    await newVideo.save();
     res.status(201).json(newVideo);
   } catch (err) {
     res.status(400).json({ message: err.message });
