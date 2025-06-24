@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const videoSchema = new mongoose.Schema({
   code: { type: Number, required: true },
+  title: { type: String, required: true },
   topicCode: { type: Number, required: true },
   topicPart: { type: String, required: true },
   signsTopic: { type: String, required: true },

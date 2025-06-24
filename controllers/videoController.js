@@ -22,6 +22,7 @@ exports.getVideosByTopicCode = async (req, res) => {
 exports.addVideo = async (req, res) => {
   const video = new Video({
     code: req.body.code,
+    title: req.body.title,
     topicCode: req.body.topicCode,
     topicPart: req.body.topicPart,
     signsTopic: req.body.signsTopic,
