@@ -59,5 +59,52 @@ router.get('/:topicCode', videoController.getVideosByTopicCode);
  *         description: video added
  */
 router.post('/', videoController.addVideo);
+/**
+ * @swagger
+ * /videos/{code}:
+ *   delete:
+ *     summary: Delete a video by code
+ *     tags: [Videos]
+ *     parameters:
+ *       - in: path
+ *         name: code
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The code of the video
+ *     responses:
+ *       200:
+ *         description: Video deleted successfully
+ *       404:
+ *         description: Video not found
+ */
+router.delete('/:code', videoController.deleteVideo);
+
+/**
+ * @swagger
+ * /videos/{code}:
+ *   put:
+ *     summary: Update a video by code
+ *     tags: [Videos]
+ *     parameters:
+ *       - in: path
+ *         name: code
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The code of the video to update
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Videos'
+ *     responses:
+ *       200:
+ *         description: Updated video
+ *       404:
+ *         description: Video not found
+ */
+router.put('/:code', videoController.updateVideo);
 
 module.exports = router;
