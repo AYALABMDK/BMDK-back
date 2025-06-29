@@ -59,5 +59,51 @@ router.post('/', lessonsController.addLesson);
  *         description: Server error
  */
 router.get('/:topicCode', lessonsController.getLessonsByTopicCode);
+/**
+ * @swagger
+ * /lessons/{code}:
+ *   put:
+ *     summary: Update a lesson by CODE
+ *     tags: [Lessons]
+ *     parameters:
+ *       - in: path
+ *         name: code
+ *         required: true
+ *         description: Lesson CODE
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Lessons'
+ *     responses:
+ *       200:
+ *         description: Lesson updated successfully
+ *       404:
+ *         description: Lesson not found
+ */
+router.put('/:code', lessonsController.updateLesson);
 
+/**
+ * @swagger
+ * /lessons/{code}:
+ *   delete:
+ *     summary: Delete a lesson by CODE
+ *     tags: [Lessons]
+ *     parameters:
+ *       - in: path
+ *         name: code
+ *         required: true
+ *         description: Lesson CODE
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Lesson deleted successfully
+ *       404:
+ *         description: Lesson not found
+ */
+router.delete('/:code', lessonsController.deleteLesson);
 module.exports = router;
