@@ -1,4 +1,5 @@
 const Topic = require('../models/Topic');
+const getNextSequence = require('../utils/getNextSequence.js')
 
 exports.getAllTopics = async (req, res) => {
   try {
@@ -11,7 +12,8 @@ exports.getAllTopics = async (req, res) => {
 
 exports.addTopic = async (req, res) => {
   try {
-    const newTopic = new Topic(req.body);
+    const id = await getNextSequence("topics");
+    const newTopic = new Topic({ ...req.body, id });
     await newTopic.save();
     res.status(201).json(newTopic);
   } catch (err) {
