@@ -39,4 +39,48 @@ router.get('/', topicsController.getAllTopics);
  */
 router.post('/', topicsController.addTopic);
 
+/**
+ * @swagger
+ * /topics:
+ *   put:
+ *     summary: Update a topic
+ *     tags: [Topics]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The id of the topic
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Topic'
+ *     responses:
+ *       201:
+ *         description: Topic updated
+ */
+router.put('/:id', topicsController.updateTopic);
+
+/**
+ * @swagger
+ * /topics:
+ *   delete:
+ *     summary: Delete a topic
+ *     tags: [Topics]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The code of the topic
+ *     responses:
+ *       201:
+ *         description: Topic deleted
+ */
+router.delete('/:id', topicsController.deleteTopic);
+
 module.exports = router;
