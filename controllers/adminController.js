@@ -13,7 +13,7 @@ exports.loginAdmin = (req, res) => {
     res.cookie('adminToken', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production', // רק בפרודקשן
-      sameSite: 'Lax',
+      sameSite: 'None',
       maxAge: 2 * 60 * 60 * 1000, // שעתיים
     });
     return res.status(200).json({ message: 'Logged in' });
