@@ -64,7 +64,7 @@ router.get('/check', verifyAdmin, (req, res) => {
 router.post('/logout', (req, res) => {
   res.clearCookie('adminToken', {
     httpOnly: true,
-    sameSite: 'Lax',
+    sameSite: 'None',
     secure: process.env.NODE_ENV === 'production'
   });
   res.status(200).json({ message: 'Logged out' });
