@@ -35,7 +35,7 @@ const {
  *       500:
  *         description: שגיאה בשליפת התמונות
  */
-router.get('/images', getImages);
+router.get('/', getImages);
 
 /**
  * @swagger
@@ -59,7 +59,7 @@ router.get('/images', getImages);
  *       500:
  *         description: שגיאה בהעלאת תמונה
  */
-router.post('/upload', upload.single('image'), uploadImage);
+router.post('/', upload.single('image'), uploadImage);
 
 /**
  * @swagger
@@ -80,7 +80,7 @@ router.post('/upload', upload.single('image'), uploadImage);
  *       500:
  *         description: שגיאה במחיקת תמונה
  */
-router.delete('/images/:publicId', deleteImage);
+router.delete('/:publicId', deleteImage);
 
 
 module.exports = router;
