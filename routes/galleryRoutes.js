@@ -9,7 +9,7 @@ const {
 
 /**
  * @swagger
- * /gallery/images:
+ * /gallery:
  *   get:
  *     summary: שליפת כל התמונות מהשרת
  *     tags: [Gallery]
@@ -39,7 +39,7 @@ router.get('/', getImages);
 
 /**
  * @swagger
- * /gallery/upload:
+ * /gallery:
  *   post:
  *     summary: העלאת תמונה ל-Cloudinary
  *     tags: [Gallery]
@@ -63,7 +63,7 @@ router.post('/', upload.single('image'), uploadImage);
 
 /**
  * @swagger
- * /gallery/images/{publicId}:
+ * /gallery/{publicId}:
  *   delete:
  *     summary: מחיקת תמונה לפי publicId
  *     tags: [Gallery]
