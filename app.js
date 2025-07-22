@@ -45,6 +45,7 @@ mongoose.connect(process.env.MONGO_URI)
 // Swagger route to serve documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
+
 // Simple health check route
 app.get('/', (req, res) => {
   res.send('API is working!');
@@ -90,7 +91,8 @@ app.use('/contact', contactRoutes);
 const adminRouter = require('./routes/adminRoutes');
 app.use('/admin', adminRouter);
 
-
+const galleryRoutes = require('./routes/galleryRoutes');
+app.use('/gallery', galleryRoutes);
 
 // Start the server
 const PORT = process.env.PORT || 4000;
