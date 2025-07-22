@@ -18,7 +18,7 @@ app.use(cookieParser());
 const cors = require('cors');
 
 app.use(cors({
-  origin: '*',  // או '*', אם את רק מפתחת
+  origin: ['http://localhost:3000', 'https://bmdk.netlify.app'],
   credentials: true // חשוב בשביל לשלוח עוגיות
 }));
 
