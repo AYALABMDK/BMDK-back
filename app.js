@@ -94,6 +94,10 @@ app.use('/admin', adminRouter);
 const galleryRoutes = require('./routes/galleryRoutes');
 app.use('/gallery', galleryRoutes);
 
+const pageRoutes = require("./routes/pagesRoutes");
+app.use("/pages", pageRoutes);
+
+
 // Start the server
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
