@@ -68,6 +68,7 @@ const generateOrderEmailHtml = async (order) => {
 
       <p style="font-size: 18px; color: #3b3b3b;"><strong>מספר הזמנה:</strong> ${order.orderCode}</p>
       <p style="font-size: 18px; color: #3b3b3b;"><strong>סטטוס הזמנה:</strong> ${order.status}</p>
+      <p style="font-size: 18px; color: #3b3b3b;"><strong>אמצעי תשלום:</strong> ${order.paymentMethod === "credit" ? "אשראי" : "העברה בנקאית"}</p>
       <p style="font-size: 18px; color: #3b3b3b;"><strong>כתובת למשלוח:</strong> ${order.address.street}, ${order.address.city}</p>
       <p style="font-size: 18px; color: #3b3b3b;"><strong>טלפון:</strong> ${order.phone}</p>
 
@@ -191,28 +192,37 @@ const updateDB = async (products) => {
     }
   }
 };
+
 exports.addOrder = async (req, res) => {
   try {
     const { email } = req.body;
-const orderData = typeof req.body.order === "string"
-  ? JSON.parse(req.body.order)
-  : req.body; // אם בא JSON רגיל – פשוט נשתמש בו ככה
-  
+
+    const orderData =
+      typeof req.body.order === "string" ? JSON.parse(req.body.order) : req.body;
+
     if (!email) {
       return res.status(400).json({ error: "Email is required" });
     }
+
+    // בדיקת סטטוס חוקי
+    const validStatuses = ["נשלחה", "ממתינה לאישור"];
+    if (!validStatuses.includes(orderData.status)) {
+      return res.status(400).json({ error: "Invalid order status" });
+    }
+
     const isCredit = orderData.paymentMethod === "credit";
-     // סטטוס ראשוני
     orderData.orderDate = new Date();
 
-    if (isCredit) await updateDB(orderData.products);
+    if (isCredit) {
+      await updateDB(orderData.products);
+    }
 
     const newOrder = new Orders({ email, ...orderData });
     await newOrder.save();
 
     const emailHtml = await generateOrderEmailHtml(newOrder);
 
-     // אם אשראי - שולחים גם ללקוח
+    // שליחת מייל ללקוח - רק אם אשראי
     if (isCredit) {
       await transporter.sendMail({
         from: `"דרך קצרה" <${process.env.GMAIL_USER}>`,
@@ -222,7 +232,7 @@ const orderData = typeof req.body.order === "string"
       });
     }
 
-    // למנהל - תמיד, עם קובץ + כפתור אישור אם זה העברה
+    // בניית מייל למנהל
     const attachments = [];
     if (req.file) {
       attachments.push({
@@ -230,26 +240,29 @@ const orderData = typeof req.body.order === "string"
         content: req.file.buffer,
       });
     }
-    const approveUrl = `${baseUrl}/confirm-transfer/${newOrder.orderCode}`;
 
-    const managerEmailHtml = `
-      ${emailHtml}
-      ${
-        !isCredit
-          ? `
-      <div style="margin-top: 30px; text-align: center;">
-        <a href="${approveUrl}"
-           style="padding: 12px 20px; background-color: #0D1E46; color: white; text-decoration: none; border-radius: 8px; font-size: 18px;">
-          אשר את ההזמנה
-        </a>
-      </div>`
-          : ""
-      }
-    `;
+    let managerEmailHtml = emailHtml;
+
+    if (orderData.status === "ממתינה לאישור") {
+      const approveUrl = `${baseUrl}/confirm-transfer/${newOrder.orderCode}`;
+      managerEmailHtml += `
+        <div style="margin-top: 30px; text-align: center; font-family: Arial;">
+          <p style="font-size: 18px;">
+            הלקוח ${newOrder.fullName} שלח הזמנה עם תשלום בהעברה בנקאית.<br/>
+            נא לאשר את ההזמנה כדי שנוכל לטפל בה.
+          </p>
+          <a href="${approveUrl}"
+             style="padding: 12px 20px; background-color: #0D1E46; color: white; text-decoration: none; border-radius: 8px; font-size: 18px; display: inline-block; margin-top: 12px;">
+            אשר את ההזמנה
+          </a>
+        </div>
+      `;
+    }
+
     await transporter.sendMail({
       from: `"דרך קצרה" <${process.env.GMAIL_USER}>`,
       to: process.env.GMAIL_USER,
-      subject: `התקבלה הזמנה חדשה מאת ${newOrder.fullName}`,
+      subject: `התקבלה הזמנה חדשה מאת ${newOrder.fullName}${orderData.status === "ממתינה לאישור" ? " (ממתינה לאישור)" : ""}`,
       html: managerEmailHtml,
       attachments,
     });
