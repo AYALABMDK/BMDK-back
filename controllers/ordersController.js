@@ -193,31 +193,65 @@ const updateDB = async (products) => {
 };
 exports.addOrder = async (req, res) => {
   try {
-    const { email, ...orderData } = req.body;
+    const { email } = req.body;
+const orderData = typeof req.body.order === "string"
+  ? JSON.parse(req.body.order)
+  : req.body; // אם בא JSON רגיל – פשוט נשתמש בו ככה
+  
     if (!email) {
       return res.status(400).json({ error: "Email is required" });
     }
-
+    const isCredit = orderData.paymentMethod === "credit";
+     // סטטוס ראשוני
     orderData.orderDate = new Date();
 
-    await updateDB(orderData.products);
+    if (isCredit) await updateDB(orderData.products);
+
     const newOrder = new Orders({ email, ...orderData });
     await newOrder.save();
 
     const emailHtml = await generateOrderEmailHtml(newOrder);
 
-    await transporter.sendMail({
-      from: `"דרך קצרה" <${process.env.GMAIL_USER}>`,
-      to: email,
-      subject: "תודה על הזמנתך",
-      html: emailHtml,
-    });
+     // אם אשראי - שולחים גם ללקוח
+    if (isCredit) {
+      await transporter.sendMail({
+        from: `"דרך קצרה" <${process.env.GMAIL_USER}>`,
+        to: email,
+        subject: "תודה על הזמנתך",
+        html: emailHtml,
+      });
+    }
 
+    // למנהל - תמיד, עם קובץ + כפתור אישור אם זה העברה
+    const attachments = [];
+    if (req.file) {
+      attachments.push({
+        filename: req.file.originalname,
+        content: req.file.buffer,
+      });
+    }
+    const approveUrl = `${baseUrl}/confirm-transfer/${newOrder.orderCode}`;
+
+    const managerEmailHtml = `
+      ${emailHtml}
+      ${
+        !isCredit
+          ? `
+      <div style="margin-top: 30px; text-align: center;">
+        <a href="${approveUrl}"
+           style="padding: 12px 20px; background-color: #0D1E46; color: white; text-decoration: none; border-radius: 8px; font-size: 18px;">
+          אשר את ההזמנה
+        </a>
+      </div>`
+          : ""
+      }
+    `;
     await transporter.sendMail({
       from: `"דרך קצרה" <${process.env.GMAIL_USER}>`,
       to: process.env.GMAIL_USER,
       subject: `התקבלה הזמנה חדשה מאת ${newOrder.fullName}`,
-      html: emailHtml,
+      html: managerEmailHtml,
+      attachments,
     });
 
     res.status(201).json(newOrder);
@@ -336,3 +370,39 @@ exports.sendCustomEmail = async (req, res) => {
     res.status(500).json({ error: "שליחת המייל נכשלה" });
   }
 };
+exports.confirmTransfer = async (req, res) => {
+  try {
+    const { orderCode } = req.params;
+    const order = await Orders.findOne({ orderCode });
+
+    if (!order) {
+      return res.status(404).send("ההזמנה לא נמצאה");
+    }
+
+    if (order.status !== "ממתינה לאישור") {
+      return res.status(400).send("ההזמנה כבר אושרה או הסתיימה");
+    }
+
+    // עדכון מלאי
+    await updateDB(order.products);
+
+    // שינוי סטטוס
+    order.status = "נשלחה";
+    await order.save();
+
+    // שליחת מייל ללקוח
+    const emailHtml = await generateOrderEmailHtml(order);
+    await transporter.sendMail({
+      from: `"דרך קצרה" <${process.env.GMAIL_USER}>`,
+      to: order.email,
+      subject: "תודה על הזמנתך",
+      html: emailHtml,
+    });
+
+    res.send("ההזמנה אושרה ונשלח מייל ללקוח");
+  } catch (err) {
+    console.error("שגיאה באישור ההעברה:", err.message);
+    res.status(500).send("שגיאה באישור ההעברה");
+  }
+};
+

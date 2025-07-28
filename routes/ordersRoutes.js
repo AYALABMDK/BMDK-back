@@ -178,4 +178,29 @@ router.get("/confirm/:orderCode", ordersController.confirmReceivedPage);
  */
 router.post("/send-custom-email", ordersController.sendCustomEmail);
 
+/**
+ * @swagger
+ * /orders/confirm-transfer/{orderCode}:
+ *   get:
+ *     summary: Confirm bank transfer and approve the order
+ *     tags: [Orders]
+ *     parameters:
+ *       - in: path
+ *         name: orderCode
+ *         required: true
+ *         description: Unique order code to confirm the bank transfer
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: The order was approved and customer was notified
+ *       400:
+ *         description: Order already approved or not pending
+ *       404:
+ *         description: Order not found
+ *       500:
+ *         description: Server error
+ */
+router.get("/confirm-transfer/:orderCode", ordersController.confirmTransfer);
+
 module.exports = router;
