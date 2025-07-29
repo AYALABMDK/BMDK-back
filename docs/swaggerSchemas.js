@@ -122,6 +122,7 @@ const schemas = {
       phone: { type: 'string' },
       status: { type: 'string' },
       orderDate: { type: 'string', format: 'date' },
+      paymentMethod : { type: 'string' },
       products: {
         type: 'array',
         items: {
@@ -137,7 +138,7 @@ const schemas = {
         }
       }
     },
-    required: ['orderCode', 'address', 'fullName', 'email', 'phone', 'status', 'orderDate', 'products']
+    required: ['orderCode', 'address', 'fullName', 'email', 'phone', 'status', 'orderDate', 'paymentMethod', 'products']
   }
 };
 

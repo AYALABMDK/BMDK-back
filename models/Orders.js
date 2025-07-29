@@ -20,6 +20,7 @@ const orderSchema = new mongoose.Schema({
   phone: { type: String, required: true },
   status: { type: String, required: true },
   orderDate: { type: Date, required: true },
+  paymentMethod: { type: String, required: true },
   products: [productSchema],
 });
 

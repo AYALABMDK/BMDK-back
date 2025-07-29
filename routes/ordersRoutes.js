@@ -47,6 +47,8 @@ router.get("/", ordersController.getAllOrders);
  *                 type: string
  *               fullName:
  *                 type: string
+ *               paymentMethod:
+ *                 type: string
  *               address:
  *                 type: object
  *                 properties:
