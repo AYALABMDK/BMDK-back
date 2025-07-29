@@ -123,6 +123,7 @@ const schemas = {
       status: { type: 'string' },
       orderDate: { type: 'string', format: 'date' },
       paymentMethod : { type: 'string' },
+      proofFile : { type: 'string' },
       products: {
         type: 'array',
         items: {
