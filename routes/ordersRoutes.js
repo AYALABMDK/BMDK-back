@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const ordersController = require("../controllers/ordersController");
+const upload = require("../middleware/upload.middleware");
 
 /**
  * @swagger
@@ -81,7 +82,7 @@ router.get("/", ordersController.getAllOrders);
  *       201:
  *         description: Order created
  */
-router.post("/", ordersController.addOrder);
+router.post("/", upload.single("proofFile"), ordersController.addOrder);
 
 /**
  * @swagger
