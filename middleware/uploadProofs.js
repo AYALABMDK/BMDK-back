@@ -5,11 +5,10 @@ const cloudinary = require('../utils/cloudinary');
 const storage = new CloudinaryStorage({
   cloudinary,
   params: {
-    folder: 'gallery', // התיקייה בענן
-    allowed_formats: ['jpg', 'png', 'jpeg', 'webp', 'pdf'],
+    folder: 'bankProofs', // תיקייה נפרדת לאישורי תשלום
+    allowed_formats: ['jpg', 'png', 'jpeg', 'pdf'],
   },
 });
 
 const upload = multer({ storage });
-
 module.exports = upload;

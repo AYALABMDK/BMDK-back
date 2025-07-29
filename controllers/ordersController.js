@@ -64,13 +64,25 @@ const generateOrderEmailHtml = async (order) => {
         alt="תודה על ההזמנה"
         style="width: 100%; margin-top: 30px; max-width: 700px; border-radius: 10px;height: auto;" />
 
-      <h2 style="color: #252e49; font-size: 28px;">${order.fullName}, תודה על ההזמנה!</h2>
+      <h2 style="color: #252e49; font-size: 28px;">${
+        order.fullName
+      }, תודה על ההזמנה!</h2>
 
-      <p style="font-size: 18px; color: #3b3b3b;"><strong>מספר הזמנה:</strong> ${order.orderCode}</p>
-      <p style="font-size: 18px; color: #3b3b3b;"><strong>סטטוס הזמנה:</strong> ${order.status}</p>
-      <p style="font-size: 18px; color: #3b3b3b;"><strong>אמצעי תשלום:</strong> ${order.paymentMethod === "credit" ? "אשראי" : "העברה בנקאית"}</p>
-      <p style="font-size: 18px; color: #3b3b3b;"><strong>כתובת למשלוח:</strong> ${order.address.street}, ${order.address.city}</p>
-      <p style="font-size: 18px; color: #3b3b3b;"><strong>טלפון:</strong> ${order.phone}</p>
+      <p style="font-size: 18px; color: #3b3b3b;"><strong>מספר הזמנה:</strong> ${
+        order.orderCode
+      }</p>
+      <p style="font-size: 18px; color: #3b3b3b;"><strong>סטטוס הזמנה:</strong> ${
+        order.status
+      }</p>
+      <p style="font-size: 18px; color: #3b3b3b;"><strong>אמצעי תשלום:</strong> ${
+        order.paymentMethod === "credit" ? "אשראי" : "העברה בנקאית"
+      }</p>
+      <p style="font-size: 18px; color: #3b3b3b;"><strong>כתובת למשלוח:</strong> ${
+        order.address.street
+      }, ${order.address.city}</p>
+      <p style="font-size: 18px; color: #3b3b3b;"><strong>טלפון:</strong> ${
+        order.phone
+      }</p>
 
       <h3 style="margin-top: 40px; font-size: 24px; color: #558e9e;">פרטי ההזמנה:</h3>
 
@@ -101,7 +113,6 @@ const generateOrderEmailHtml = async (order) => {
     </div>
   `;
 };
-
 
 exports.getAllOrders = async (req, res) => {
   try {
@@ -195,10 +206,12 @@ const updateDB = async (products) => {
 
 exports.addOrder = async (req, res) => {
   try {
-    const { email } = req.body;
+   const orderData =
+      typeof req.body.order === "string"
+        ? JSON.parse(req.body.order)
+        : req.body;
 
-    const orderData =
-      typeof req.body.order === "string" ? JSON.parse(req.body.order) : req.body;
+    const { email } = orderData;
 
     if (!email) {
       return res.status(400).json({ error: "Email is required" });
@@ -217,7 +230,13 @@ exports.addOrder = async (req, res) => {
       await updateDB(orderData.products);
     }
 
-    const newOrder = new Orders({ email, ...orderData });
+    const proofFileUrl = req.file?.path || null;
+
+    const newOrder = new Orders({
+      email,
+      ...orderData,
+      proofFile: proofFileUrl,
+    });
     await newOrder.save();
 
     const emailHtml = await generateOrderEmailHtml(newOrder);
@@ -234,11 +253,8 @@ exports.addOrder = async (req, res) => {
 
     // בניית מייל למנהל
     const attachments = [];
-    if (req.file) {
-      attachments.push({
-        filename: req.file.originalname,
-        content: req.file.buffer,
-      });
+    if (proofFileUrl) {
+      managerEmailHtml += `<p><strong>אישור העברה:</strong> <a href="${proofFileUrl}" target="_blank">צפייה בקובץ</a></p>`;
     }
 
     let managerEmailHtml = emailHtml;
@@ -262,7 +278,9 @@ exports.addOrder = async (req, res) => {
     await transporter.sendMail({
       from: `"דרך קצרה" <${process.env.GMAIL_USER}>`,
       to: process.env.GMAIL_USER,
-      subject: `התקבלה הזמנה חדשה מאת ${newOrder.fullName}${orderData.status === "ממתינה לאישור" ? " (ממתינה לאישור)" : ""}`,
+      subject: `התקבלה הזמנה חדשה מאת ${newOrder.fullName}${
+        orderData.status === "ממתינה לאישור" ? " (ממתינה לאישור)" : ""
+      }`,
       html: managerEmailHtml,
       attachments,
     });
@@ -418,4 +436,3 @@ exports.confirmTransfer = async (req, res) => {
     res.status(500).send("שגיאה באישור ההעברה");
   }
 };
-

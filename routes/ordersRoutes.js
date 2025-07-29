@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const ordersController = require("../controllers/ordersController");
-const upload = require("../middleware/upload.middleware");
+const uploadProof = require("../middleware/uploadProofs");
 
 /**
  * @swagger
@@ -31,59 +31,22 @@ router.get("/", ordersController.getAllOrders);
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             properties:
- *               email:
+ *               order:
  *                 type: string
- *                 format: email
- *               phone:
+ *                 description: JSON string של ההזמנה (stringify)
+ *               proofFile:
  *                 type: string
- *               orderCode:
- *                 type: number
- *               studentCode:
- *                 type: number
- *               status:
- *                 type: string
- *               fullName:
- *                 type: string
- *               paymentMethod:
- *                 type: string
- *               address:
- *                 type: object
- *                 properties:
- *                   city:
- *                     type: string
- *                   street:
- *                     type: string
- *                 required:
- *                   - city
- *                   - street
- *               products:
- *                 type: array
- *                 items:
- *                   type: object
- *                   properties:
- *                     bookCode:
- *                       type: string
- *                     videoCode:
- *                       type: number
- *                     size:
- *                       type: string
- *                     quantity:
- *                       type: number
- *                     price:
- *                       type: number
- *                   required:
- *                     - price
- *                     - quantity
+ *                 format: binary
+ *                 description: קובץ אישור תשלום (PDF או תמונה)
  *     responses:
  *       201:
  *         description: Order created
  */
-router.post("/", upload.single("proofFile"), ordersController.addOrder);
-
+router.post("/", uploadProof.single("proofFile"), ordersController.addOrder);
 /**
  * @swagger
  * /orders/{orderCode}:

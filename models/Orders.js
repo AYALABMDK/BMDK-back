@@ -21,6 +21,7 @@ const orderSchema = new mongoose.Schema({
   status: { type: String, required: true },
   orderDate: { type: Date, required: true },
   paymentMethod: { type: String, required: true },
+  proofFile : { type: String },
   products: [productSchema],
 });
 
