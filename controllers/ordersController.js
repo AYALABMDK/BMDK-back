@@ -27,11 +27,18 @@ const generateOrderEmailHtml = async (order) => {
     .map((p) => {
       let rowContent = "";
 
+      // if (p.bookCode !== undefined && p.bookCode !== null) {
+      // const book = books.find((x) => x.code === Number(p.bookCode));
+      // const topic = topics.find((x) => x.id === book.topicCode);
       if (p.bookCode !== undefined && p.bookCode !== null) {
         const book = books.find((x) => x.code === Number(p.bookCode));
-        const topic = topics.find((x) => x.id === book.topicCode);
+        let topicName = "לא ידוע";
+        if (book && book.topicCode !== undefined) {
+          const topic = topics.find((x) => x.id === book.topicCode);
+          topicName = topic?.name || "לא ידוע";
+        }
         rowContent = `
-          <td style="border: 1px solid #cfcfcf; padding: 12px;"> ספר ${topic.name} ${book.signs}</td>
+          <td style="border: 1px solid #cfcfcf; padding: 12px;"> ספר ${topicName} ${book.signs}</td>
           <td style="border: 1px solid #cfcfcf; padding: 12px;">${p.size}</td>
           <td style="border: 1px solid #cfcfcf; padding: 12px;">${p.quantity}</td>
           <td style="border: 1px solid #cfcfcf; padding: 12px;">${p.price} ₪</td>
@@ -206,7 +213,7 @@ const updateDB = async (products) => {
 
 exports.addOrder = async (req, res) => {
   try {
-   const orderData =
+    const orderData =
       typeof req.body.order === "string"
         ? JSON.parse(req.body.order)
         : req.body;
@@ -250,22 +257,32 @@ exports.addOrder = async (req, res) => {
         html: emailHtml,
       });
     }
+    let managerEmailHtml = emailHtml;
 
     // בניית מייל למנהל
     const attachments = [];
     if (proofFileUrl) {
-      managerEmailHtml += `<p><strong>אישור העברה:</strong> <a href="${proofFileUrl}" target="_blank">צפייה בקובץ</a></p>`;
+      managerEmailHtml += `
+  <div style="text-align: center; margin-top: 30px; font-family: Arial, sans-serif;">
+    <p style="font-size: 18px; color: #0D1E46; font-weight: bold; margin-bottom: 14px;">
+      :אישור העברה בנקאית מצורף
+    </p>
+    <a href="${proofFileUrl}" target="_blank"
+       style="display: inline-block; background-color: #0D1E46; color: white; padding: 12px 24px;
+              border-radius: 8px; text-decoration: none; font-size: 17px; font-weight: bold;">
+      צפייה בקובץ
+    </a>
+  </div>
+`;
     }
-
-    let managerEmailHtml = emailHtml;
 
     if (orderData.status === "ממתינה לאישור") {
       const approveUrl = `${baseUrl}/confirm-transfer/${newOrder.orderCode}`;
       managerEmailHtml += `
         <div style="margin-top: 30px; text-align: center; font-family: Arial;">
           <p style="font-size: 18px;">
-            הלקוח ${newOrder.fullName} שלח הזמנה עם תשלום בהעברה בנקאית.<br/>
-            נא לאשר את ההזמנה כדי שנוכל לטפל בה.
+            הלקוח ${newOrder.fullName} .שלח הזמנה עם תשלום בהעברה בנקאית<br/>
+            .נא לאשר את ההזמנה כדי שנוכל לטפל בה
           </p>
           <a href="${approveUrl}"
              style="padding: 12px 20px; background-color: #0D1E46; color: white; text-decoration: none; border-radius: 8px; font-size: 18px; display: inline-block; margin-top: 12px;">
@@ -329,6 +346,16 @@ exports.updateOrder = async (req, res) => {
             ? "ההזמנה שלך נשלחה"
             : "ההזמנה שלך סופקה",
         html: statusEmailHtml,
+      });
+    } else if (updateData.status === "התקבלה") {
+      // כאן שולחים את מייל ההזמנה הרגילה ללקוח
+      const emailHtml = await generateOrderEmailHtml(updatedOrder);
+
+      await transporter.sendMail({
+        from: `"דרך קצרה" <${process.env.GMAIL_USER}>`,
+        to: updatedOrder.email,
+        subject: "תודה על הזמנתך",
+        html: emailHtml,
       });
     }
 
