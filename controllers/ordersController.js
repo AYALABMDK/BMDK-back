@@ -26,10 +26,6 @@ const generateOrderEmailHtml = async (order) => {
   const productList = order.products
     .map((p) => {
       let rowContent = "";
-
-      // if (p.bookCode !== undefined && p.bookCode !== null) {
-      // const book = books.find((x) => x.code === Number(p.bookCode));
-      // const topic = topics.find((x) => x.id === book.topicCode);
       if (p.bookCode !== undefined && p.bookCode !== null) {
         const book = books.find((x) => x.code === Number(p.bookCode));
         let topicName = "לא ידוע";
@@ -230,7 +226,7 @@ exports.addOrder = async (req, res) => {
       return res.status(400).json({ error: "Invalid order status" });
     }
 
-    const isCredit = orderData.paymentMethod === "credit";
+    const isCredit = orderData.paymentMethod === "אשראי";
     orderData.orderDate = new Date();
 
     if (isCredit) {
@@ -281,12 +277,12 @@ exports.addOrder = async (req, res) => {
       managerEmailHtml += `
         <div style="margin-top: 30px; text-align: center; font-family: Arial;">
           <p style="font-size: 18px;">
-            הלקוח ${newOrder.fullName} .שלח הזמנה עם תשלום בהעברה בנקאית<br/>
-            .נא לאשר את ההזמנה כדי שנוכל לטפל בה
+            .הלקוח ${newOrder.fullName} שלח הזמנה עם תשלום בהעברה בנקאית<br/>
+            .נא לאשר את התשלום כדי שנוכל לטפל בה
           </p>
           <a href="${approveUrl}"
              style="padding: 12px 20px; background-color: #0D1E46; color: white; text-decoration: none; border-radius: 8px; font-size: 18px; display: inline-block; margin-top: 12px;">
-            אשר את ההזמנה
+            אשר את התשלום
           </a>
         </div>
       `;
@@ -445,7 +441,7 @@ exports.confirmTransfer = async (req, res) => {
     await updateDB(order.products);
 
     // שינוי סטטוס
-    order.status = "נשלחה";
+    order.status = "התקבלה";
     await order.save();
 
     // שליחת מייל ללקוח
