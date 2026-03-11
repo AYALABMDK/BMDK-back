@@ -1,26 +1,54 @@
-const nodemailer = require("nodemailer");
+// const nodemailer = require("nodemailer");
+
+// const sendEmail = async (req, res) => {
+//     console.log("=== Contact route hit ===");
+//   console.log("Body:", req.body);
+
+//   const { name, email, message } = req.body;
+
+//   const transporter = nodemailer.createTransport({
+//     service: "gmail",
+//     auth: {
+//       user: process.env.GMAIL_USER,
+//       pass: process.env.GMAIL_PASS,
+//     },
+//   });
+
+//   const mailOptions = {
+//     from: `"${name}" <${process.env.GMAIL_USER}>`, // תישאר הכתובת שלך, עם השם של השולח
+//     replyTo: email, // זאת הכתובת של השולח
+//     to: process.env.GMAIL_USER,
+//     subject: `הודעה חדשה מאת ${name}`,
+//     text: message,
+//   };
+
+//   try {
+//     await transporter.sendMail(mailOptions);
+//     res.status(200).json({ success: true, message: "ההודעה נשלחה בהצלחה" });
+//   } catch (error) {
+//     console.error("שגיאה בשליחת מייל:", error);
+//     res.status(500).json({ success: false, message: "שגיאה בשליחת מייל" });
+//   }
+// };
+
+// module.exports = {
+//   sendEmail,
+// };
+const { Resend } = require("resend");
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const sendEmail = async (req, res) => {
   const { name, email, message } = req.body;
 
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.GMAIL_USER,
-      pass: process.env.GMAIL_PASS,
-    },
-  });
-
-  const mailOptions = {
-    from: `"${name}" <${process.env.GMAIL_USER}>`, // תישאר הכתובת שלך, עם השם של השולח
-    replyTo: email, // זאת הכתובת של השולח
-    to: process.env.GMAIL_USER,
-    subject: `הודעה חדשה מאת ${name}`,
-    text: message,
-  };
-
   try {
-    await transporter.sendMail(mailOptions);
+    await resend.emails.send({
+      from: "Contact Form <onboarding@resend.dev>",
+      replyTo: email,
+      to: process.env.GMAIL_USER,
+      subject: `הודעה חדשה מאת ${name}`,
+      text: message,
+    });
     res.status(200).json({ success: true, message: "ההודעה נשלחה בהצלחה" });
   } catch (error) {
     console.error("שגיאה בשליחת מייל:", error);
@@ -28,6 +56,4 @@ const sendEmail = async (req, res) => {
   }
 };
 
-module.exports = {
-  sendEmail,
-};
+module.exports = { sendEmail };
